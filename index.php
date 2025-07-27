@@ -20,6 +20,9 @@
     $filter = $_GET['filter'] ?? '1h';
     $minutes = match($filter) {
         '1h' => 60,
+	'2h' => 120,
+	'4h' => 240,
+	'6h' => 360,
         '24h' => 1440,
         '7d' => 10080,
         'all' => null,
@@ -80,7 +83,7 @@
             <tr>
                 <th>Callsign</th>
                 <th>Source</th>
-                <th>Last Heard</th>
+                <th>Last Heard (UTC)</th>
 		<th>Distance (KM)</th>
 		<th>Message</th>
             </tr>
