@@ -37,6 +37,8 @@ A clean, modernized PHP web interface for monitoring and visualizing APRX digipe
 ├── tail.php          # Log tailing backend
 ├── style.css         # Modern dark CSS
 ├── aprslogo.png      # Header logo
+├── api/
+│ └── logfetch.php    # AJAX endpoint for live log streaming
 ```
 
 ---
