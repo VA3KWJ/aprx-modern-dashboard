@@ -105,5 +105,8 @@ document.getElementById("export-log").addEventListener("click", () => {
     document.body.removeChild(link);
 });
 </script>
+<footer class="footer">
+        <a href="https://github.com/VA3KWJ/aprx-modern-dashboard" target="_blank">APRX Monitor</a>&copy;<a href=https://va3kwj.ca target=_blank>VA3KWJ 2025</a>
+</footer>
 </body>
 </html>

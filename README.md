@@ -4,6 +4,14 @@ A clean, modernized PHP web interface for monitoring and visualizing APRX digipe
 
 ---
 
+### 📡 Live View
+
+Want to see it in action?
+
+👉 **[View the live dashboard here](https://aprx.va3kwj.ca)**
+
+---
+
 ## 🚀 Features
 
 - 📊 Dashboard summary of recent activity
