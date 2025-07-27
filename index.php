@@ -87,19 +87,20 @@
         </thead>
         <tbody>
             <?php if (!empty($recentCalls)): ?>
-                <?php foreach ($recentCalls as $call => $info): ?>
-                    <?php $baseCall = explode('-', $call)[0]; ?>
-                    <tr>
-			<td class="callsign">
-			    <a href="https://www.qrz.com/db/<?php echo urlencode($baseCall); ?>" target="_blank" title="View on QRZ">📖</a>&nbsp;
-			    <a href="https://aprs.fi/<?php echo urlencode($call); ?>" target="_blank"><?php echo htmlspecialchars($call); ?></a>
-			</td>
-			<td><?php echo htmlspecialchars($info['type']); ?></td>
-			<td><?php echo htmlspecialchars($info['time']); ?></td>
-			<td><?php echo isset($info['distance']) ? $info['distance'] . ' km' : '–'; ?></td>
-			<td><?php echo isset($info['message']) ? htmlspecialchars($info['message']) : '–'; ?></td>
-                    </tr>
-                <?php endforeach; ?>
+		<?php foreach ($recentCalls as $info): ?>
+		    <?php $call = $info['callsign']; ?>
+		    <?php $baseCall = explode('-', $call)[0]; ?>
+		    <tr>
+		        <td class="callsign">
+		            <a href="https://www.qrz.com/db/<?php echo urlencode($baseCall); ?>" target="_blank" title="View on QRZ">📖</a>&nbsp;
+		            <a href="https://aprs.fi/<?php echo urlencode($call); ?>" target="_blank"><?php echo htmlspecialchars($call); ?></a>
+		        </td>
+		        <td><?php echo htmlspecialchars($info['type']); ?></td>
+		        <td><?php echo htmlspecialchars($info['time']); ?></td>
+		        <td><?php echo isset($info['distance']) ? round($info['distance'], 1) . ' km' : '–'; ?></td>
+		        <td><?php echo isset($info['message']) ? htmlspecialchars($info['message']) : '–'; ?></td>
+		    </tr>
+		<?php endforeach; ?>
             <?php else: ?>
                 <tr><td colspan="3">No stations heard during selected time range.</td></tr>
             <?php endif; ?>

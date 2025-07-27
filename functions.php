@@ -58,6 +58,7 @@ function getRecentCalls($logPath, $minutes = null, $serverLat = null, $serverLon
 
     $lines = file($logPath);
     $now = time();
+    //$now = gmdate('U');  // current time in UTC as Unix timestamp
     $calls = [];
 
     foreach (array_reverse($lines) as $line) {
@@ -98,15 +99,25 @@ function getRecentCalls($logPath, $minutes = null, $serverLat = null, $serverLon
 
 		$message = extractAprsMessage($line);
 
-            $calls[$fromCall] = [
-                'time' => date('Y-m-d H:i:s', $timestamp),
+/*            $calls[$fromCall] = [
+		'callsign' => $fromCall,
+		'time' => date('Y-m-d H:i:s', $timestamp),
                 'type' => $type,
                 'distance' => $distance,
 		'message'  => $message
-            ];
+            ];*/
+	$calls[] = [
+	    'callsign' => $fromCall,
+	    'time'     => date('Y-m-d H:i:s', $timestamp),
+	    'type'     => $type,
+	    'distance' => $distance,
+	    'message'  => $message
+	];
+
         }
     }
 
+    //uasort($calls, fn($a, $b) => strtotime($b['time']) <=> strtotime($a['time']));
     uasort($calls, fn($a, $b) => strtotime($b['time']) <=> strtotime($a['time']));
     return $calls;
 }
