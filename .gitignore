@@ -1,0 +1,8 @@
+.env
+*.log
+*.conf
+*.sock
+.env
+*.log
+*.conf
+*.sock
