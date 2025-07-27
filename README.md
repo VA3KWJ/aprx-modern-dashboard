@@ -12,21 +12,6 @@ Want to see it in action?
 
 ---
 
-### 🔁 APRX Log Rotation Notice
-
-**Heads up:** APRX rotates its log files automatically based on size or time (depending on your system’s logrotate configuration). As a result:
-
-- The visible data in the dashboard will change over time
-- Historical data may no longer be available once the log rotates
-- For high-traffic stations, the "Last 7 Days" or "All" view may only reflect what’s still in the current `.log` file
-
-To increase retention, you can:
-- Adjust your system's `logrotate` policy
-- Symlink or configure APRX to write to a larger or persistent log file
-- Periodically archive logs yourself if needed
-
----
-
 ## 🚀 Features
 
 - 📊 Dashboard summary of recent activity
@@ -122,8 +107,20 @@ Please credit all original contributors:
 - No external JS or PHP libraries required.
 - QRZ and APRS-IS lookups are based on the callsign string and use direct linking.
 - Reverse geolocation (if used) leverages Nominatim — respect usage limits.
+- Reverse geolocation only resolves to local metro area, suburbs may not resolve
+- Log rotation limitations, see below
 
 ---
 
-🛰 APRX on the air, now with style.  
-https://github.com/VA3KWJ/aprx-modern-dashboard
+### 🔁 APRX Log Rotation Notice
+
+**Heads up:** APRX rotates its log files automatically based on size or time (depending on your system’s logrotate configuration). As a result:
+
+- The visible data in the dashboard will change over time
+- Historical data may no longer be available once the log rotates
+- For high-traffic stations, the "Last 7 Days" or "All" view may only reflect what’s still in the current `.log` file
+
+To increase retention, you can:
+- Adjust your system's `logrotate` policy
+- Symlink or configure APRX to write to a larger or persistent log file
+- Periodically archive logs yourself if needed
