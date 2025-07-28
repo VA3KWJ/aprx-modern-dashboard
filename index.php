@@ -10,8 +10,10 @@
     $role = getRole($stationData);
 
 	// Load Location
-	$lat = $config['lat'];
-	$lon = $config['lon'];
+//	$lat = $config['lat'];
+//	$lon = $config['lon'];
+	$serverLat = $config['latitude'];
+	$serverLon = $config['longitude'];
 	$locationLabel = reverseGeocode($config['latitude'], $config['longitude']);
 	//die("Location: $locationLabel");
 
@@ -34,7 +36,6 @@
       $config['latitude'],
       $config['longitude']
     );
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,22 +45,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <header class="header-container">
-    <div style="display: flex; align-items: center; gap: 1em;">
-        <img src="aprslogo.png" class="logo" alt="APRS Logo">
-        <h1 class="dashboard-title">APRX Dashboard</h1>
-    </div>
-    <div class="interface-info">
-        <span>Interface: <strong><?php echo htmlspecialchars($config['interface']); ?></strong></span>
-        <span>Version: <strong><?php echo htmlspecialchars($aprxver); ?></strong></span>
-	<span>Location: <strong><?php echo htmlspecialchars($locationLabel); ?></strong></span>
-        <span>Role: <strong><?php echo $role; ?></strong></span>
-        <span>Uptime: <strong><?php echo htmlspecialchars($uptime); ?></strong></span>
-        <span><a href="/live.php">Live Stats</a></span>
-    </div>
+	<div style="display: flex; align-items: center; gap: 1em;">
+		<img src="aprslogo.png" class="logo" alt="APRS Logo">
+		<h1 class="dashboard-title"><?php echo htmlspecialchars($config['callsign']); ?> - APRX Dashboard</h1>
+	</div>
+	<div class="header-nav">
+		<a href="/live.php">Live Stats</a>
+	</div>
 </header>
-
 <section class="form">
     <form method="get" action="">
         <label for="filter">Show calls heard:</label>
@@ -112,8 +106,18 @@
 </div>
 
 <footer class="footer">
-	<a href="https://github.com/VA3KWJ/aprx-modern-dashboard" target="_blank">APRX Monitor</a>&copy;<a href=https://va3kwj.ca target=_blank>VA3KWJ 2025</a>
+	<div class="footer-info-row">
+		<span><strong>Interface:</strong> <?php echo htmlspecialchars($config['interface']); ?></span>
+		<span><strong>Version:</strong> <?php echo htmlspecialchars($aprxver); ?></span>
+		<span><strong>Location:</strong> <?php echo htmlspecialchars($locationLabel); ?></span>
+		<span><strong>Role:</strong> <?php echo $role; ?></span>
+		<span><strong>Uptime:</strong> <?php echo htmlspecialchars($uptime); ?></span>
+	</div>
+	<div class="footer-brand">
+		<a href="https://github.com/VA3KWJ/aprx-modern-dashboard" target="_blank">APRX Monitor</a>
+		<span>&copy;</span>
+		<a href="https://va3kwj.ca" target="_blank">VA3KWJ 2025</a>
+	</div>
 </footer>
-
 </body>
 </html>

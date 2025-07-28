@@ -58,8 +58,19 @@ function getRecentCalls($logPath, $minutes = null, $serverLat = null, $serverLon
 
     $lines = file($logPath);
     $now = time();
-    //$now = gmdate('U');  // current time in UTC as Unix timestamp
     $calls = [];
+
+$digipeatedKeys = [];
+
+foreach ($lines as $line) {
+	if (preg_match('/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\.\d+\s+(\S+)\s+T\s+([A-Z0-9\-]+)>.*?:([^\r\n]+)/', $line, $m)) {
+		$fromCall = strtoupper($m[3]);
+		$payload  = trim($m[4]);
+		$key = md5($fromCall . $payload);
+		$digipeatedKeys[$key] = true;
+	}
+}
+
 
     foreach (array_reverse($lines) as $line) {
         // Match timestamp, source (e.g. VA3KWJ-10), direction (R or T), and callsign
@@ -98,26 +109,17 @@ function getRecentCalls($logPath, $minutes = null, $serverLat = null, $serverLon
             }
 
 		$message = extractAprsMessage($line);
-
-/*            $calls[$fromCall] = [
-		'callsign' => $fromCall,
-		'time' => date('Y-m-d H:i:s', $timestamp),
-                'type' => $type,
-                'distance' => $distance,
-		'message'  => $message
-            ];*/
-	$calls[] = [
-	    'callsign' => $fromCall,
-	    'time'     => date('Y-m-d H:i:s', $timestamp),
-	    'type'     => $type,
-	    'distance' => $distance,
-	    'message'  => $message
-	];
+		$calls[] = [
+		    'callsign' => $fromCall,
+		    'time'     => date('Y-m-d H:i:s', $timestamp),
+		    'type'     => $type,
+		    'distance' => $distance,
+		    'message'  => $message,
+		];
 
         }
     }
 
-    //uasort($calls, fn($a, $b) => strtotime($b['time']) <=> strtotime($a['time']));
     uasort($calls, fn($a, $b) => strtotime($b['time']) <=> strtotime($a['time']));
     return $calls;
 }
