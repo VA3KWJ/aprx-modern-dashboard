@@ -53,7 +53,7 @@ function calculateDistance($lat1, $lon1, $lat2, $lon2) {
     return round($earthRadius * $c, 1);
 }
 
-function getRecentCalls($logPath, $minutes = null, $serverLat = null, $serverLon = null) {
+function getRecentCalls($logPath, $minutes = null, $serverLat = null, $serverLon = null, $sourceFilter = '') {
     if (!file_exists($logPath)) return [];
 
     $lines = file($logPath);
@@ -68,6 +68,10 @@ foreach ($lines as $line) {
 		$payload  = trim($m[4]);
 		$key = md5($fromCall . $payload);
 		$digipeatedKeys[$key] = true;
+		$timestamp = strtotime($m[1]);
+		$src       = strtoupper($m[2]);
+		$dir       = $m[3];
+		$fromCall  = strtoupper($m[4]);
 	}
 }
 
@@ -84,6 +88,9 @@ foreach ($lines as $line) {
             if ($dir !== 'R') continue; // Skip digipeated (T) packets
 
             $type = ($src === 'APRSIS') ? 'APRS-IS' : 'RF';
+
+            if ($sourceFilter && $type !== $sourceFilter) continue;
+
             $distance = null;
 
             // Match position packets in !, @, or : format with optional timestamp

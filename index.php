@@ -30,12 +30,41 @@
         'all' => null,
         default => 60,
     };
+    $source = $_GET['source'] ?? '';
     $recentCalls = getRecentCalls(
       $config['aprx_log_path'],
       $minutes,
       $config['latitude'],
-      $config['longitude']
+      $config['longitude'],
+      $source
     );
+
+/* Uncomment for total stations heard 
+    $rfCount = 0;
+    $aprsisCount = 0;
+
+    foreach ($recentCalls as $entry) {
+	if ($entry['type'] === 'RF') $rfCount++;
+	elseif ($entry['type'] === 'APRS-IS') $aprsisCount++;
+    }
+
+    $totalCount = count($recentCalls);
+*/
+/* Unique stations heard, comment out if using total stations heard above */
+    $callsigns = array_column($recentCalls, 'callsign');
+    $unique = array_unique($callsigns);
+    $totalCount = count($unique);
+
+    $rfCount = count(array_unique(array_column(
+	array_filter($recentCalls, fn($e) => $e['type'] === 'RF'),
+	'callsign'
+    )));
+
+    $aprsisCount = count(array_unique(array_column(
+	array_filter($recentCalls, fn($e) => $e['type'] === 'APRS-IS'),
+	'callsign'
+    )));
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,12 +96,18 @@
             <option value="7d"  <?php if ($filter == '7d') echo 'selected'; ?>>Last 7 days</option>
             <option value="all" <?php if ($filter == 'all') echo 'selected'; ?>>All time</option>
         </select>
+	<label for="source">Source:</label>
+	<select name="source" id="source" onchange="this.form.submit()">
+		<option value="">All</option>
+		<option value="RF" <?php if ($source === 'RF') echo 'selected'; ?>>RF</option>
+		<option value="APRS-IS" <?php if ($source === 'APRS-IS') echo 'selected'; ?>>APRS-IS</option>
+	</select>
     </form>
 </section>
 
 <div class="table-center">
     <table>
-        <caption class="table-caption">Stations Heard</caption>
+        <caption class="table-caption">Stations Heard: (<?php echo $rfCount; ?> RF, <?php echo $aprsisCount; ?> APRS-IS)</caption>
         <thead>
             <tr>
                 <th>Callsign</th>
