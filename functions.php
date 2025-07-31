@@ -1,5 +1,25 @@
 <?php
 
+function getStationMeta(array $config): array {
+	$stationData   = parseAprxConfig($config['aprx_config_path']);
+	$aprxver       = getAprxVersion();
+	$uptime        = getUptime();
+	$role          = getRole($stationData);
+	$serverLat     = $config['latitude'];
+	$serverLon     = $config['longitude'];
+	$locationLabel = reverseGeocode($serverLat, $serverLon);
+
+	return [
+		'aprxver'       => $aprxver,
+		'uptime'        => $uptime,
+		'role'          => $role,
+		'stationData'   => $stationData,
+		'serverLat'     => $serverLat,
+		'serverLon'     => $serverLon,
+		'locationLabel' => $locationLabel,
+	];
+}
+
 function loadConfig() {
     $configFile = __DIR__ . '/config.php';
     return file_exists($configFile) ? include $configFile : [];
@@ -118,10 +138,13 @@ foreach ($lines as $line) {
 		$message = extractAprsMessage($line);
 		$calls[] = [
 		    'callsign' => $fromCall,
+		    'source'   => $src,                  // your interface, e.g., VA3KWJ-10
 		    'time'     => date('Y-m-d H:i:s', $timestamp),
-		    'type'     => $type,
+		    //'type'     => $type,
+		    'type'     => 'RF',
 		    'distance' => $distance,
 		    'message'  => $message,
+		    //'message'  => trim($line),
 		];
 
         }
@@ -129,6 +152,20 @@ foreach ($lines as $line) {
 
     uasort($calls, fn($a, $b) => strtotime($b['time']) <=> strtotime($a['time']));
     return $calls;
+}
+
+function getRfInterfaces($configPath) {
+	$interfaces = [];
+
+	if (!file_exists($configPath)) return $interfaces;
+
+	$data = file_get_contents($configPath);
+	if (preg_match_all('/<interface>.*?callsign\s+(\S+)/is', $data, $matches)) {
+		foreach ($matches[1] as $match) {
+			$interfaces[] = strtoupper(trim($match));
+		}
+	}
+	return $interfaces;
 }
 
 function getRole($configData) {

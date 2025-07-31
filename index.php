@@ -3,21 +3,6 @@
     $config = include 'config.php';
     require_once 'functions.php';
 
-    // Load APRX config
-    $stationData = parseAprxConfig($config['aprx_config_path']);
-    $aprxver = getAprxVersion();
-    $uptime = getUptime();
-    $role = getRole($stationData);
-
-	// Load Location
-//	$lat = $config['lat'];
-//	$lon = $config['lon'];
-	$serverLat = $config['latitude'];
-	$serverLon = $config['longitude'];
-	$locationLabel = reverseGeocode($config['latitude'], $config['longitude']);
-	//die("Location: $locationLabel");
-
-
     // Handle time filter
     $filter = $_GET['filter'] ?? '1h';
     $minutes = match($filter) {
@@ -36,8 +21,31 @@
       $minutes,
       $config['latitude'],
       $config['longitude'],
-      $source
+      $source,
+      $selectedInterface
     );
+
+// Get interfaces
+$selectedInterface = $_GET['interface'] ?? '';
+
+if (!empty($selectedInterface)) {
+	$recentCalls = array_filter($recentCalls, function ($info) use ($selectedInterface) {
+		return strtoupper($info['source'] ?? '') === strtoupper($selectedInterface);
+	});
+}
+
+$rfInterfaces = getRfInterfaces($config['aprx_config_path']);
+
+foreach ($recentCalls as &$info) {
+	$iface = strtoupper($info['source'] ?? '');
+	if (in_array($iface, $rfInterfaces)) {
+		$info['type'] = "RF: $iface";
+	} else {
+		$info['type'] = "APRS-IS";
+	}
+}
+unset($info);
+
 
 /* Uncomment for total stations heard 
     $rfCount = 0;
@@ -56,7 +64,7 @@
     $totalCount = count($unique);
 
     $rfCount = count(array_unique(array_column(
-	array_filter($recentCalls, fn($e) => $e['type'] === 'RF'),
+	array_filter($recentCalls, fn($e) => str_starts_with($e['type'], 'RF:')),
 	'callsign'
     )));
 
@@ -102,6 +110,15 @@
 		<option value="RF" <?php if ($source === 'RF') echo 'selected'; ?>>RF</option>
 		<option value="APRS-IS" <?php if ($source === 'APRS-IS') echo 'selected'; ?>>APRS-IS</option>
 	</select>
+	<label for="interface">Interface:</label>
+	<select name="interface" id="interface" onchange="this.form.submit()">
+		<option value="">All</option>
+		<?php foreach ($rfInterfaces as $iface): ?>
+			<option value="<?php echo htmlspecialchars($iface); ?>" <?php if (($selectedInterface ?? '') === $iface) echo 'selected'; ?>>
+				<?php echo htmlspecialchars($iface); ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
     </form>
 </section>
 
@@ -139,20 +156,10 @@
         </tbody>
     </table>
 </div>
-
-<footer class="footer">
-	<div class="footer-info-row">
-		<span><strong>Interface:</strong> <?php echo htmlspecialchars($config['interface']); ?></span>
-		<span><strong>Version:</strong> <?php echo htmlspecialchars($aprxver); ?></span>
-		<span><strong>Location:</strong> <?php echo htmlspecialchars($locationLabel); ?></span>
-		<span><strong>Role:</strong> <?php echo $role; ?></span>
-		<span><strong>Uptime:</strong> <?php echo htmlspecialchars($uptime); ?></span>
-	</div>
-	<div class="footer-brand">
-		<a href="https://github.com/VA3KWJ/aprx-modern-dashboard" target="_blank">APRX Monitor</a>
-		<span>&copy;</span>
-		<a href="https://va3kwj.ca" target="_blank">VA3KWJ 2025</a>
-	</div>
-</footer>
+<?php
+	$meta = getStationMeta($config);  // Load shared APRX/Station data
+	extract($meta);                   // Make vars available ($aprxver, $uptime, etc.)
+	include 'footer.php';             // Output the consistent footer
+?>
 </body>
 </html>

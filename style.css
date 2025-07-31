@@ -262,3 +262,12 @@ td.callsign {
 .footer-brand a:hover {
 	background-color: rgba(255, 255, 255, 0.2);
 }
+td:last-child {
+	max-width: 300px;
+	/* overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;*/
+	white-space: normal;
+	word-wrap: break-word;
+	overflow-wrap: anywhere;
+}

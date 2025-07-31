@@ -1,5 +1,9 @@
 <?php
-$selectedLog = $_GET['log'] ?? 'rf';
+    session_start();
+    $config = include 'config.php';
+    require_once 'functions.php';
+    include 'footer.php';
+    $selectedLog = $_GET['log'] ?? 'rf';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,8 +109,10 @@ document.getElementById("export-log").addEventListener("click", () => {
     document.body.removeChild(link);
 });
 </script>
-<footer class="footer">
-        <a href="https://github.com/VA3KWJ/aprx-modern-dashboard" target="_blank">APRX Monitor</a>&copy;<a href=https://va3kwj.ca target=_blank>VA3KWJ 2025</a>
-</footer>
+<?php
+	$meta = getStationMeta($config);  // Load shared APRX/Station data
+	extract($meta);                   // Make vars available ($aprxver, $uptime, etc.)
+	include 'footer.php';             // Output the consistent footer
+?>
 </body>
 </html>
