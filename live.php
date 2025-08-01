@@ -2,7 +2,6 @@
     session_start();
     $config = include 'config.php';
     require_once 'functions.php';
-    include 'footer.php';
     $selectedLog = $_GET['log'] ?? 'rf';
 ?>
 <!DOCTYPE html>
@@ -13,27 +12,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="log-header" style="flex-wrap: wrap; gap: 1em;">
-        <div style="flex: 1; min-width: 300px;">
-            <h1 style="margin: 0;">Live APRX Log Stream</h1>
-            <a href="index.php" class="submit">← Back to Home</a>
-        </div>
-
-        <form method="get" style="display: flex; align-items: center; gap: 0.5em;">
-            <label for="logselect">Log:</label>
-            <select name="log" id="logselect" onchange="this.form.submit()">
-                <option value="rf" <?= $selectedLog === 'rf' ? 'selected' : '' ?>>RF (aprx-rf.log)</option>
-                <option value="daemon" <?= $selectedLog === 'daemon' ? 'selected' : '' ?>>Daemon (aprx.log)</option>
-            </select>
-        </form>
-
-        <div style="display: flex; align-items: center; gap: 0.5em;">
-            <label for="log-search">Search:</label>
-            <input type="text" id="log-search" placeholder="Enter filter text..." style="width: 200px; padding: 6px;">
-            <button id="export-log" class="submit" style="height: 36px;">Export</button>
-        </div>
-    </div>
-
+<div class="log-header">
+	<div class="log-header-row">
+		<h1 class="log-title">Live APRX Log Stream</h1>
+		<a href="index.php" class="submit">← Back to Home</a>
+	</div>
+	<div class="log-header-row">
+		<form method="get" style="display: flex; align-items: center; gap: 0.75em;">
+			<label for="logselect">Log:</label>
+			<select name="log" id="logselect" onchange="this.form.submit()">
+				<option value="rf" <?= $selectedLog === 'rf' ? 'selected' : '' ?>>RF (aprx-rf.log)</option>
+				<option value="daemon" <?= $selectedLog === 'daemon' ? 'selected' : '' ?>>Daemon (aprx.log)</option>
+			</select>
+		</form>
+		<div class="log-search-row">
+			<label for="log-search">Search:</label>
+			<input type="text" id="log-search" placeholder="Enter filter text..." style="width: 200px; padding: 6px;">
+			<button id="export-log" class="submit" style="height: 36px;">Export</button>
+		</div>
+	</div>
+</div>
     <div class="log-container" id="log"></div>
 <script>
     const logElement = document.getElementById("log");

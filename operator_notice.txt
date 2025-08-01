@@ -1,1 +1,1 @@
-Sample operator notice
+This is a WIP and may change regularly. My D700 seems to be failing so you'll mostly see APRSIS packets here until I get APRX working with my LoRa board.

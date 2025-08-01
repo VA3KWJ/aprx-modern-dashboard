@@ -158,11 +158,31 @@ td.callsign {
 
 .log-header {
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	flex-direction: column;
+	gap: 1em;
 	margin: 1em auto;
 	width: 90%;
 	max-width: 1200px;
+}
+
+.log-header-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1em;
+}
+
+.log-title {
+	margin: 0;
+	font-size: 1.5em;
+	color: var(--accent);
+}
+
+.log-search-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
 }
 
 .log-header h1 {
@@ -274,16 +294,16 @@ td:last-child {
 .notice-box {
 	background-color: #facc15;
 	color: #1e293b;
-	padding: 1em;
+	padding: 0.75em;
 	margin: 1em auto;
 	max-width: 90%;
-	border-radius: 8px;
+	border-radius: 6px;
 	font-weight: bold;
 	text-align: center;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 	overflow-wrap: break-word;
 	word-wrap: break-word;
 	hyphens: auto;
-	font-size: clamp(0.9rem, 1.2vw, 1.25rem);
-	line-height: 1.4;
+	font-size: clamp(0.55rem, 0.8vw, 0.7rem); /* ~8–11px */
+	line-height: 1.3;
 }
