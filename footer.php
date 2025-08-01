@@ -9,6 +9,12 @@
 		<span><strong>Location:</strong> <?php echo htmlspecialchars($locationLabel); ?></span>
 		<span><strong>Role:</strong> <?php echo htmlspecialchars($role); ?></span>
 		<span><strong>Uptime:</strong> <?php echo htmlspecialchars($uptime); ?></span>
+		<span>
+			<strong>Status:</strong>
+			<span style="color:<?php echo $aprxStatus === 'active' ? 'limegreen' : 'tomato'; ?>">
+				<?php echo htmlspecialchars(ucfirst($aprxStatus)); ?>
+			</span>
+		</span>
 	</div>
 	<div class="footer-brand">
 		<a href="https://github.com/VA3KWJ/aprx-modern-dashboard" target="_blank">APRX Monitor</a>

@@ -3,6 +3,9 @@
     $config = include 'config.php';
     require_once 'functions.php';
 
+    // Load interface variable
+    $selectedInterface = $_GET['interface'] ?? '';
+
     // Handle time filter
     $filter = $_GET['filter'] ?? '1h';
     $minutes = match($filter) {
@@ -25,29 +28,25 @@
       $selectedInterface
     );
 
-// Get interfaces
-$selectedInterface = $_GET['interface'] ?? '';
-
-if (!empty($selectedInterface)) {
+    if (!empty($selectedInterface)) {
 	$recentCalls = array_filter($recentCalls, function ($info) use ($selectedInterface) {
 		return strtoupper($info['source'] ?? '') === strtoupper($selectedInterface);
 	});
-}
+    }
 
-$rfInterfaces = getRfInterfaces($config['aprx_config_path']);
+    $rfInterfaces = getRfInterfaces($config['aprx_config_path']);
 
-foreach ($recentCalls as &$info) {
+    foreach ($recentCalls as &$info) {
 	$iface = strtoupper($info['source'] ?? '');
 	if (in_array($iface, $rfInterfaces)) {
 		$info['type'] = "RF: $iface";
 	} else {
 		$info['type'] = "APRS-IS";
 	}
-}
-unset($info);
+    }
+    unset($info);
 
-
-/* Uncomment for total stations heard 
+/* Uncomment for total stations heard
     $rfCount = 0;
     $aprsisCount = 0;
 

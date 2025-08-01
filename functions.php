@@ -1,5 +1,10 @@
 <?php
 
+function getAprxServiceStatus(): string {
+	$output = shell_exec('systemctl is-active aprx.service 2>/dev/null');
+	return trim($output); // Will return: 'active', 'inactive', 'failed', etc.
+}
+
 function getStationMeta(array $config): array {
 	$stationData   = parseAprxConfig($config['aprx_config_path']);
 	$aprxver       = getAprxVersion();
@@ -8,6 +13,7 @@ function getStationMeta(array $config): array {
 	$serverLat     = $config['latitude'];
 	$serverLon     = $config['longitude'];
 	$locationLabel = reverseGeocode($serverLat, $serverLon);
+	$aprxStatus    = getAprxServiceStatus();
 
 	return [
 		'aprxver'       => $aprxver,
@@ -17,6 +23,7 @@ function getStationMeta(array $config): array {
 		'serverLat'     => $serverLat,
 		'serverLon'     => $serverLon,
 		'locationLabel' => $locationLabel,
+		'aprxStatus'    => $aprxStatus,
 	];
 }
 
