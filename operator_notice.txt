@@ -1,1 +1,0 @@
-This is a sample OP notice. Edit the operator_notice.txt file or leave blank to hide.
