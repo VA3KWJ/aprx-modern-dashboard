@@ -15,12 +15,14 @@ Want to see it in action?
 ## 🚀 Features
 
 - 📊 Dashboard summary of recent activity
-- 📡 Live log viewer with APRX-RF and Daemon logs
+- 📡 📡 Live log viewer with selectable APRX-RF and Daemon logs
 - ⏱ Selectable time ranges (1h, 2h, 4h, 6h, 12h, 24h, 7d, All)
 - 🧭 Station table with QRZ and APRS-IS links
 - 🧠 Uptime, mode (Digipeater/iGate), APRX version, interface label
 - 🌐 Simple, modern CSS theme (no external dependencies)
 - 🔍 Search and filter functionality
+- 📥 Log source dropdown and real-time stream updates
+- 📢 Optional operator notices shown at top of live log view (edit `operator_notice.txt`)
 
 ---
 
@@ -30,6 +32,7 @@ Want to see it in action?
 - **Lighttpd 1.4.x** with PHP-FPM
 - **PHP 8.2** (specifically tested on 8.2.15)
 - APRX compiled or installed from source
+- **Debian 12 (Bookworm)** on Raspberry PI 3B (arm64 image)
 
 ---
 
@@ -45,6 +48,9 @@ Want to see it in action?
 ├── tail.php          # Log tailing backend
 ├── style.css         # Modern dark CSS
 ├── aprslogo.png      # Header logo
+├── test-sse.php      # SSE test for live tailing
+├── test-tail.php     # PHP tail test script
+├── operator_notice.txt # Optional message displayed at top of live log
 ├── api/
 │ └── logfetch.php    # AJAX endpoint for live log streaming
 ```
@@ -88,6 +94,16 @@ To allow this without prompting for a password:
 echo "www-data ALL=(ALL) NOPASSWD: /usr/sbin/aprx" | sudo tee /etc/sudoers.d/aprx-dashboard
 ```
 
+### 4. Optional: Operator Notices
+
+You can create a simple `operator_notice.txt` file in the root directory. If present and non-empty, its contents will be displayed in a prominent banner on the Live Log page. If the file is blank or missing, no banner will appear.
+
+This can be useful for:
+
+- Scheduled maintenance
+- Troubleshooting notices
+- Real-time station status updates
+
 ---
 
 ## 📜 License
@@ -104,7 +120,7 @@ Please credit all original contributors:
 
 ## 📎 Notes
 
-- No external JS or PHP libraries required.
+- No external JS or PHP libraries required. Live updates use native Server-Sent Events (SSE).
 - QRZ and APRS-IS lookups are based on the callsign string and use direct linking.
 - Reverse geolocation (if used) leverages Nominatim — respect usage limits.
 - Reverse geolocation only resolves to local metro area, suburbs may not resolve
