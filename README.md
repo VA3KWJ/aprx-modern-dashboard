@@ -45,6 +45,7 @@ Want to see it in action?
 ├── summary.php       # Statistics generator
 ├── config.php        # Configuration file paths
 ├── functions.php     # Utility functions
+├── footer.php        # Universal footer
 ├── tail.php          # Log tailing backend
 ├── style.css         # Modern dark CSS
 ├── aprslogo.png      # Header logo
