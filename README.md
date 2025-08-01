@@ -48,8 +48,6 @@ Want to see it in action?
 ├── tail.php          # Log tailing backend
 ├── style.css         # Modern dark CSS
 ├── aprslogo.png      # Header logo
-├── test-sse.php      # SSE test for live tailing
-├── test-tail.php     # PHP tail test script
 ├── operator_notice.txt # Optional message displayed at top of live log
 ├── api/
 │ └── logfetch.php    # AJAX endpoint for live log streaming
