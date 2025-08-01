@@ -3,6 +3,9 @@
     $config = include 'config.php';
     require_once 'functions.php';
 
+    // Load notice
+    $operatorNotice = getOperatorNotice();
+
     // Load interface variable
     $selectedInterface = $_GET['interface'] ?? '';
 
@@ -86,6 +89,11 @@
 		<img src="aprslogo.png" class="logo" alt="APRS Logo">
 		<h1 class="dashboard-title"><?php echo htmlspecialchars($config['callsign']); ?> - APRX Dashboard</h1>
 	</div>
+	<?php if (!empty($operatorNotice)): ?>
+	<div class="notice-box">
+		<?php echo nl2br(htmlspecialchars($operatorNotice)); ?>
+	</div>
+	<?php endif; ?>
 	<div class="header-nav">
 		<a href="/live.php">Live Stats</a>
 	</div>

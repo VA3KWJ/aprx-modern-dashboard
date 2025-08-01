@@ -252,3 +252,11 @@ function reverseGeocode($lat, $lon) {
 
     return ($city && $state) ? "$city, $state" : "Unknown Location";
 }
+
+function getOperatorNotice(string $path = 'operator_notice.txt'): ?string {
+	if (file_exists($path)) {
+		$content = trim(file_get_contents($path));
+		return $content !== '' ? $content : null;
+	}
+	return null;
+}
