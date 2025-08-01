@@ -1,9 +1,0 @@
-.env
-*.log
-*.conf
-*.sock
-.env
-*.log
-*.conf
-*.sock
-operator_notice.txt
