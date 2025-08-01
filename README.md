@@ -42,7 +42,6 @@ Want to see it in action?
 /var/www/html/
 ├── index.php         # Dashboard summary view
 ├── live.php          # Live log viewer
-├── summary.php       # Statistics generator
 ├── config.php        # Configuration file paths
 ├── functions.php     # Utility functions
 ├── footer.php        # Universal footer
