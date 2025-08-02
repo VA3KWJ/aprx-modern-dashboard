@@ -149,7 +149,7 @@ td.callsign {
 	font-family: monospace;
 	white-space: pre-wrap;
 	overflow-y: scroll;
-	height: 80vh;
+	height: 70vh;
 	border: 1px solid var(--border);
 	margin: 1em auto;
 	width: 90%;

@@ -3,6 +3,9 @@
     $config = include 'config.php';
     require_once 'functions.php';
 
+    // Load meta
+    $meta = getStationMeta($config);
+
     // Load notice
     $operatorNotice = getOperatorNotice();
 
@@ -21,12 +24,15 @@
         'all' => null,
         default => 60,
     };
+
     $source = $_GET['source'] ?? '';
     $recentCalls = getRecentCalls(
       $config['aprx_log_path'],
       $minutes,
-      $config['latitude'],
-      $config['longitude'],
+//      $config['latitude'],
+//      $config['longitude'],
+      $meta['serverLat'],
+      $meta['serverLon'],
       $source,
       $selectedInterface
     );
@@ -164,7 +170,7 @@
     </table>
 </div>
 <?php
-	$meta = getStationMeta($config);  // Load shared APRX/Station data
+	/* $meta = getStationMeta($config);  // Load shared APRX/Station data */
 	extract($meta);                   // Make vars available ($aprxver, $uptime, etc.)
 	include 'footer.php';             // Output the consistent footer
 ?>
