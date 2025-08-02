@@ -101,7 +101,8 @@
 	</div>
 	<?php endif; ?>
 	<div class="header-nav">
-		<a href="/live.php">Live Stats</a>
+		<a href="/live.php">Live Log</a>
+		<a href="/stats.php">Interface Stats</a>
 	</div>
 </header>
 <section class="form">
