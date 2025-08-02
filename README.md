@@ -23,6 +23,7 @@ Want to see it in action?
 - 🔍 Search and filter functionality
 - 📥 Log source dropdown and real-time stream updates
 - 📢 Optional operator notices shown at top of live log view (edit `operator_notice.txt`)
+- 📈 Dynamic RX/TX stats broken down by interface
 
 ---
 
@@ -47,6 +48,7 @@ Want to see it in action?
 ├── footer.php        # Universal footer
 ├── tail.php          # Log tailing backend
 ├── style.css         # Modern dark CSS
+├── stats.php         # Dynamic RX/TX stats per interface
 ├── aprslogo.png      # Header logo
 ├── operator_notice.txt # Optional message displayed at top of live log
 ├── api/
@@ -110,8 +112,9 @@ This project is free for **non-commercial use only**.
 
 Please credit all original contributors:
 
-- Peter SQ8VPS & Alfredo IZ7BOJ
-- Ryan KF6ODE
+- Piotr SQ8VPS [https://github.com/sq8vps/aprx-simplewebstat](GitHub)
+- Alfredo IZ7BOJ [https://github.com/IZ7BOJ/aprx-simplewebstat](GitHub)
+- promo766 [https://github.com/promo776/aprx-simplewebstat](GitHub)
 - Modernized by **VA3KWJ**
 
 ---
@@ -123,6 +126,8 @@ Please credit all original contributors:
 - Reverse geolocation (if used) leverages Nominatim — respect usage limits.
 - Reverse geolocation only resolves to local metro area, suburbs may not resolve
 - Log rotation limitations, see below
+- Comments in aprx.conf are ignored during parsing
+- All timestamps are shown in local server time (not UTC)
 
 ---
 
