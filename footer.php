@@ -22,3 +22,17 @@
 		<a href="https://va3kwj.ca" target="_blank">VA3KWJ 2025</a>
 	</div>
 </footer>
+<script>
+document.querySelectorAll('.localtime').forEach(el => {
+	const utc = el.dataset.utc;
+	if (!utc) return;
+	const d = new Date(utc + ' UTC');
+	el.textContent = d.toLocaleString(undefined, {
+		month: 'short',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false
+	});
+});
+</script>

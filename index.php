@@ -143,7 +143,7 @@
             <tr>
                 <th>Callsign</th>
                 <th>Source</th>
-                <th>Last Heard (UTC)</th>
+                <th>Last Heard</th>
 		<th>Distance (KM)</th>
 		<th>Message</th>
             </tr>
@@ -159,7 +159,9 @@
 		            <a href="https://aprs.fi/<?php echo urlencode($call); ?>" target="_blank"><?php echo htmlspecialchars($call); ?></a>
 		        </td>
 		        <td><?php echo htmlspecialchars($info['type']); ?></td>
-		        <td><?php echo htmlspecialchars($info['time']); ?></td>
+			<td data-utc="<?php echo htmlspecialchars($info['time']); ?>" class="localtime">
+				<?php echo htmlspecialchars($info['time']); ?>
+			</td>
 		        <td><?php echo isset($info['distance']) ? round($info['distance'], 1) . ' km' : '–'; ?></td>
 		        <td><?php echo isset($info['message']) ? htmlspecialchars($info['message']) : '–'; ?></td>
 		    </tr>

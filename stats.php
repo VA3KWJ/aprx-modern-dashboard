@@ -21,12 +21,19 @@ $ranges = [
 
 $selectedRange = $_GET['range'] ?? '7d';
 $cutoff = strtotime($ranges[$selectedRange] ?? '-7 days');
-$useHourly = in_array($selectedRange, ['1h', '2h', '6h', '12h']);
+$useHourly = in_array($selectedRange, ['1h', '2h', '6h', '12h', '1d']);
 
 $lines = file_exists($logPath) ? file($logPath) : [];
 
 $stats = [];
 $allBuckets = [];
+
+$now = time();
+$step = $useHourly ? 3600 : 86400;
+for ($t = $cutoff; $t <= $now; $t += $step) {
+    $bucket = $useHourly ? date('Y-m-d H:00', $t) : date('Y-m-d', $t);
+    $allBuckets[$bucket] = true;
+}
 
 foreach ($lines as $line) {
     if (preg_match('/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})\.\d+\s+(\S+)\s+([RT])\s+/', $line, $m)) {
@@ -62,7 +69,7 @@ sort($allBuckets);
 
 <div class="log-header">
     <div class="log-header-row">
-        <h1 class="log-title">Interface Stats</h1>
+        <h1 class="log-title">Interface Stats (<?php echo strtoupper($selectedRange); ?>)</h1>
         <a href="index.php" class="submit">← Back to Home</a>
     </div>
     <form method="get" style="margin-top: 1rem;">
