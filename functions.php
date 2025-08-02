@@ -72,13 +72,13 @@ function parseAprxConfig($configPath) {
 	$lines = getCleanLines($configPath);
 
 	foreach ($lines as $line) {
+		$line = trim($line);
+		if ($line === '' || str_starts_with($line, '#')) continue; // Ignore blank and comment lines
+
 		if (preg_match('/^mycall\s+(\S+)/i', $line, $m)) {
 			$data['callsign'] = strtoupper($m[1]);
 		} elseif (preg_match('/^interface\s+(\S+)/i', $line, $m)) {
 			$data['interfaces'][] = $m[1];
-		} elseif (preg_match('/myloc\s+lat\s+([0-9\.]+[NS])\s+lon\s+([0-9\.]+[EW])/i', $line, $m)) {
-			$data['myloc_lat'] = aprsCoordToDecimal($m[1], true);
-			$data['myloc_lon'] = aprsCoordToDecimal($m[2], false);
 		} elseif (stripos($line, 'igate') !== false) {
 			$data['igate'] = true;
 		} elseif (stripos($line, 'digipeater') !== false) {
@@ -244,12 +244,28 @@ function getRfInterfaces($configPath) {
 
 	if (!file_exists($configPath)) return $interfaces;
 
-	$data = file_get_contents($configPath);
-	if (preg_match_all('/<interface>.*?callsign\s+(\S+)/is', $data, $matches)) {
-		foreach ($matches[1] as $match) {
-			$interfaces[] = strtoupper(trim($match));
+	$lines = file($configPath);
+	$inInterfaceBlock = false;
+
+	foreach ($lines as $line) {
+		$line = trim($line);
+		if ($line === '' || str_starts_with($line, '#')) continue;
+
+		if (preg_match('/^<interface>/i', $line)) {
+			$inInterfaceBlock = true;
+			continue;
+		}
+
+		if ($inInterfaceBlock && preg_match('/^<\/interface>/i', $line)) {
+			$inInterfaceBlock = false;
+			continue;
+		}
+
+		if ($inInterfaceBlock && preg_match('/^callsign\s+(\S+)/i', $line, $m)) {
+			$interfaces[] = strtoupper(trim($m[1]));
 		}
 	}
+
 	return $interfaces;
 }
 
