@@ -112,9 +112,9 @@ This project is free for **non-commercial use only**.
 
 Please credit all original contributors:
 
-- Piotr SQ8VPS [https://github.com/sq8vps/aprx-simplewebstat](GitHub)
-- Alfredo IZ7BOJ [https://github.com/IZ7BOJ/aprx-simplewebstat](GitHub)
-- promo766 [https://github.com/promo776/aprx-simplewebstat](GitHub)
+- Piotr SQ8VPS [GitHub](https://github.com/sq8vps/aprx-simplewebstat)
+- Alfredo IZ7BOJ [GitHub](https://github.com/IZ7BOJ/aprx-simplewebstat)
+- promo766 [GitHub](https://github.com/promo776/aprx-simplewebstat)
 - Modernized by **VA3KWJ**
 
 ---
