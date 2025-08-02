@@ -212,7 +212,7 @@ function reverseGeocode($lat, $lon) {
     $opts = [
         "http" => [
             "method" => "GET",
-            "header" => "User-Agent: APRX-Dashboard/1.0 (https://va3kwj.ca)\r\n"
+            "header" => "User-Agent: APRX-Dashboard/1.0 (https://github.com/VA3KWJ/aprx-modern-dashboard)\r\n"
         ]
     ];
 
