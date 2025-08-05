@@ -1,68 +1,25 @@
 <?php
 require_once 'functions.php';
+
 $config = loadConfig();
 $meta = getStationMeta($config);
 extract($meta);
 
-$interfaces = getRfInterfaces($config['aprx_config_path']);
-$logPath = $config['aprx_log_path'];
-
-// Define time ranges and cutoff timestamps
-$ranges = [
-    '1h' => '-1 hour',
-    '2h' => '-2 hours',
-    '6h' => '-6 hours',
-    '12h' => '-12 hours',
-    '1d' => '-1 day',
-    '7d' => '-7 days',
-    '14d' => '-14 days',
-    '30d' => '-30 days'
-];
-
 $selectedRange = $_GET['range'] ?? '7d';
-$cutoff = strtotime($ranges[$selectedRange] ?? '-7 days');
-$useHourly = in_array($selectedRange, ['1h', '2h', '6h', '12h', '1d']);
 
-$lines = file_exists($logPath) ? file($logPath) : [];
-
-$stats = [];
-$allBuckets = [];
-
-$now = time();
-$step = $useHourly ? 3600 : 86400;
-for ($t = $cutoff; $t <= $now; $t += $step) {
-    $bucket = $useHourly ? date('Y-m-d H:00', $t) : date('Y-m-d', $t);
-    $allBuckets[$bucket] = true;
-}
-
-foreach ($lines as $line) {
-    if (preg_match('/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})\.\d+\s+(\S+)\s+([RT])\s+/', $line, $m)) {
-        $date = $m[1];
-        $time = $m[2];
-        $iface = $m[3];
-        $dir = $m[4];
-        $ts = strtotime("$date $time");
-        if (!in_array($iface, $interfaces)) continue;
-        if ($ts < $cutoff) continue;
-
-        $bucket = $useHourly ? date('Y-m-d H:00', $ts) : $date;
-        $allBuckets[$bucket] = true;
-
-        if (!isset($stats[$iface][$bucket])) $stats[$iface][$bucket] = ['rx' => 0, 'tx' => 0];
-        if ($dir === 'R') $stats[$iface][$bucket]['rx']++;
-        if ($dir === 'T') $stats[$iface][$bucket]['tx']++;
-    }
-}
-
-$allBuckets = array_keys($allBuckets);
-sort($allBuckets);
+$statData = generateStats($config, $selectedRange);
+extract($statData); // includes $stats, $buckets, $ranges, etc.
+$stats = $statData['stats'];
+$allBuckets = $statData['buckets'];
+$useHourly = $statData['useHourly'];
+$interfaces = $statData['interfaces'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>APRX Interface Stats</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -75,11 +32,11 @@ sort($allBuckets);
     <form method="get" style="margin-top: 1rem;">
         <label for="range">Date Range:</label>
         <select name="range" id="range" onchange="this.form.submit()">
-            <?php foreach ($ranges as $key => $label): ?>
-                <option value="<?php echo $key; ?>" <?php if ($selectedRange === $key) echo 'selected'; ?>>
-                    <?php echo $key; ?>
-                </option>
-            <?php endforeach; ?>
+	<?php foreach ($ranges as $key => $range): ?>
+		<option value="<?php echo $key; ?>" <?php if ($selectedRange === $key) echo 'selected'; ?>>
+			<?php echo $range['label']; ?>
+		</option>
+	<?php endforeach; ?>
         </select>
     </form>
 </div>
@@ -120,7 +77,7 @@ new Chart(document.getElementById('chart_<?php echo $iface; ?>'), {
         plugins: {
             title: {
                 display: true,
-                text: '<?php echo $iface; ?> RX/TX - <?php echo strtoupper($selectedRange); ?>'
+                text: '<?php echo $iface; ?> RX/TX - <?php echo $ranges[$selectedRange]['label']; ?>'
             }
         },
         scales: {

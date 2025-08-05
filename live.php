@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Live APRX Log</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <div class="log-header">
@@ -34,79 +34,13 @@
 </div>
     <div class="log-container" id="log"></div>
 <script>
-    const logElement = document.getElementById("log");
-    const logType = "<?= htmlspecialchars($selectedLog) ?>";
-    const searchInput = document.getElementById("log-search");
-    let allLines = [];
-    let lastOffset = 0;
-    const maxLines = 100;
-
-    function classifyLine(line) {
-        if (line.includes(" T ")) return "log-tx";
-        if (line.includes(" R ")) return "log-rx";
-        return "log-sys";
-    }
-
-    function renderLog(lines) {
-        const filter = searchInput.value.toLowerCase();
-        logElement.innerHTML = "";
-        lines.forEach(line => {
-            if (line.toLowerCase().includes(filter)) {
-                const div = document.createElement("div");
-                div.className = "log-line " + classifyLine(line);
-                div.textContent = line;
-                logElement.appendChild(div);
-            }
-        });
-        logElement.scrollTop = logElement.scrollHeight;
-    }
-
-    async function fetchLog() {
-        const res = await fetch(`/api/logfetch.php?log=${logType}&offset=${lastOffset}`);
-        if (!res.ok) {
-            logElement.innerHTML = "<div class='log-line log-sys'>Error loading log.</div>";
-            return;
-        }
-
-        const data = await res.json();
-        lastOffset = data.offset || 0;
-
-        // Update line buffer
-        allLines.push(...data.lines);
-        if (allLines.length > maxLines) {
-            allLines = allLines.slice(allLines.length - maxLines); // truncate
-        }
-
-        renderLog(allLines);
-    }
-
-    searchInput.addEventListener("input", () => renderLog(allLines));
-
-    fetchLog();
-    setInterval(fetchLog, 5000);
-document.getElementById("export-log").addEventListener("click", () => {
-    const filter = searchInput.value.toLowerCase();
-    const visibleLines = allLines.filter(line =>
-        line.toLowerCase().includes(filter)
-    );
-
-    const blob = new Blob([visibleLines.join("\n")], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    const ts = new Date().toISOString().replace(/[:.]/g, "-");
-    const fileName = `aprx-log-${logType}-${ts}.txt`;
-
-    link.href = url;
-    link.download = fileName;
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-
-    URL.revokeObjectURL(url);
-    document.body.removeChild(link);
-});
+	// Pass log type to JS via data attribute
+	document.addEventListener("DOMContentLoaded", () => {
+		const logContainer = document.getElementById("log");
+		logContainer.dataset.logType = "<?= htmlspecialchars($selectedLog) ?>";
+	});
 </script>
+<script src="/assets/js/live-log.js"></script>
 <?php
 	$meta = getStationMeta($config);  // Load shared APRX/Station data
 	extract($meta);                   // Make vars available ($aprxver, $uptime, etc.)

@@ -23,7 +23,9 @@ Want to see it in action?
 - 🔍 Search and filter functionality
 - 📥 Log source dropdown and real-time stream updates
 - 📢 Optional operator notices shown at top of live log view (edit `operator_notice.txt`)
-- 📈 Dynamic RX/TX stats broken down by interface
+- 📈 Interface-based RX/TX statistics with chart view
+- 🗂 Modular PHP logic (dashboard, stats, meta, filters)
+- 🔽 Dynamic dropdowns for source, interface, and date range
 
 ---
 
@@ -32,7 +34,7 @@ Want to see it in action?
 - **Debian 12 (Bookworm)**
 - **Lighttpd 1.4.x** with PHP-FPM
 - **PHP 8.2** (specifically tested on 8.2.15)
-- APRX compiled or installed from source
+- **APRX** from Debian repo
 - **Debian 12 (Bookworm)** on Raspberry PI 3B (arm64 image)
 
 ---
@@ -41,18 +43,24 @@ Want to see it in action?
 
 ```
 /var/www/html/
-├── index.php         # Dashboard summary view
-├── live.php          # Live log viewer
-├── config.php        # Configuration file paths
-├── functions.php     # Utility functions
-├── footer.php        # Universal footer
-├── tail.php          # Log tailing backend
-├── style.css         # Modern dark CSS
-├── stats.php         # Dynamic RX/TX stats per interface
-├── aprslogo.png      # Header logo
-├── operator_notice.txt # Optional message displayed at top of live log
+├── index.php		# Dashboard summary view
+├── live.php		# Live log viewer
+├── logchk.php		# Test logfile permissions (for debug)
+├── config.php		# Configuration file paths
+├── functions.php	# Utility functions
+├── footer.php		# Universal footer
+├── tail.php		# Log tailing backend
+├── stats.php		# Dynamic RX/TX stats per interface
+├── operator_notice.txt	# Optional message displayed at top of live log
 ├── api/
-│ └── logfetch.php    # AJAX endpoint for live log streaming
+│ └── logfetch.php	# AJAX endpoint for live log streaming
+├── assets/
+│ ├── css/
+│ │ └── style.css	# Modern dark CSS theme
+│ ├── js/
+│ │ └── live-log.js	# JavaScript for real-time log rendering
+│ ├── img/
+│ │ └── aprslogo.png	# Logo shown in header
 ```
 
 ---
@@ -121,13 +129,19 @@ Please credit all original contributors:
 
 ## 📎 Notes
 
-- No external JS or PHP libraries required. Live updates use native Server-Sent Events (SSE).
+- Live updates use native Server-Sent Events (SSE).
+- Chart rendering utilizes [jsdelivr.com chart.js](https://www.jsdelivr.com/package/npm/chart.js)
 - QRZ and APRS-IS lookups are based on the callsign string and use direct linking.
 - Reverse geolocation (if used) leverages Nominatim — respect usage limits.
 - Reverse geolocation only resolves to local metro area, suburbs may not resolve
 - Log rotation limitations, see below
 - Comments in aprx.conf are ignored during parsing
 - All timestamps are shown in local server time (not UTC)
+- PHP logic is now modularized in `functions.php` (e.g., dashboard data, stats generation)
+- `getStationMeta()` will gracefully fall back to configured latitude/longitude
+- `generateStats()` powers the RX/TX charts in `stats.php` and supports time-based bucketing
+- Dropdowns and filters reflect the live state and persist across requests
+
 
 ---
 

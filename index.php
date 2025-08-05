@@ -1,98 +1,31 @@
 <?php
-    session_start();
-    $config = include 'config.php';
-    require_once 'functions.php';
+	$config = include 'config.php';
+	require_once 'functions.php';
 
-    // Load meta
-    $meta = getStationMeta($config);
+	$data = loadDashboardData($config, $_GET);
 
-    // Load notice
-    $operatorNotice = getOperatorNotice();
-
-    // Load interface variable
-    $selectedInterface = $_GET['interface'] ?? '';
-
-    // Handle time filter
-    $filter = $_GET['filter'] ?? '1h';
-    $minutes = match($filter) {
-        '1h' => 60,
-	'2h' => 120,
-	'4h' => 240,
-	'6h' => 360,
-        '24h' => 1440,
-        '7d' => 10080,
-        'all' => null,
-        default => 60,
-    };
-
-    $source = $_GET['source'] ?? '';
-    $recentCalls = getRecentCalls(
-      $config['aprx_log_path'],
-      $minutes,
-//      $config['latitude'],
-//      $config['longitude'],
-      $meta['serverLat'],
-      $meta['serverLon'],
-      $source,
-      $selectedInterface
-    );
-
-    if (!empty($selectedInterface)) {
-	$recentCalls = array_filter($recentCalls, function ($info) use ($selectedInterface) {
-		return strtoupper($info['source'] ?? '') === strtoupper($selectedInterface);
-	});
-    }
-
-    $rfInterfaces = getRfInterfaces($config['aprx_config_path']);
-
-    foreach ($recentCalls as &$info) {
-	$iface = strtoupper($info['source'] ?? '');
-	if (in_array($iface, $rfInterfaces)) {
-		$info['type'] = "RF: $iface";
-	} else {
-		$info['type'] = "APRS-IS";
-	}
-    }
-    unset($info);
-
-/* Uncomment for total stations heard
-    $rfCount = 0;
-    $aprsisCount = 0;
-
-    foreach ($recentCalls as $entry) {
-	if ($entry['type'] === 'RF') $rfCount++;
-	elseif ($entry['type'] === 'APRS-IS') $aprsisCount++;
-    }
-
-    $totalCount = count($recentCalls);
-*/
-/* Unique stations heard, comment out if using total stations heard above */
-    $callsigns = array_column($recentCalls, 'callsign');
-    $unique = array_unique($callsigns);
-    $totalCount = count($unique);
-
-    $rfCount = count(array_unique(array_column(
-	array_filter($recentCalls, fn($e) => str_starts_with($e['type'], 'RF:')),
-	'callsign'
-    )));
-
-    $aprsisCount = count(array_unique(array_column(
-	array_filter($recentCalls, fn($e) => $e['type'] === 'APRS-IS'),
-	'callsign'
-    )));
-
+	$meta = $data['meta'];
+	$operatorNotice = $data['operatorNotice'];
+	$recentCalls = $data['recentCalls'];
+	$totalCount = $data['totalCount'];
+	$rfCount = $data['rfCount'];
+	$aprsisCount = $data['aprsisCount'];
+	$selectedInterface = $data['selectedInterface'];
+	$filter = $data['filter'];
+	$source = $data['source'];
+	$rfInterfaces = $data['rfInterfaces'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>APRX Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <header class="header-container">
 	<div style="display: flex; align-items: center; gap: 1em;">
-		<img src="aprslogo.png" class="logo" alt="APRS Logo">
+		<img src="/assets/img/aprslogo.png" class="logo" alt="APRS Logo">
 		<h1 class="dashboard-title"><?php echo htmlspecialchars($config['callsign']); ?> - APRX Dashboard</h1>
 	</div>
 	<?php if (!empty($operatorNotice)): ?>

@@ -5,8 +5,8 @@ function getStationMeta(array $config): array {
 	$aprxver       = getAprxVersion();
 	$uptime        = getUptime();
 	$role          = getRole($stationData);
-	$serverLat     = $stationData['myloc_lat'] ?? $config['latitude'];
-	$serverLon     = $stationData['myloc_lon'] ?? $config['longitude'];
+	$serverLat = $stationData['myloc_lat'] ?? ($config['latitude'] ?? 0);
+	$serverLon = $stationData['myloc_lon'] ?? ($config['longitude'] ?? 0);
 	$locationLabel = reverseGeocode($serverLat, $serverLon);
 	$aprxStatus    = getAprxServiceStatus();
 
@@ -275,4 +275,141 @@ function getOperatorNotice(string $path = 'operator_notice.txt'): ?string {
 		return $content !== '' ? $content : null;
 	}
 	return null;
+}
+function loadDashboardData(array $config, array $params): array {
+	session_start();
+
+	$meta = getStationMeta($config);
+	$operatorNotice = getOperatorNotice();
+
+	$selectedInterface = $params['interface'] ?? '';
+	$source = $params['source'] ?? '';
+	$filter = $params['filter'] ?? '1h';
+
+	$minutes = match($filter) {
+		'1h' => 60,
+		'2h' => 120,
+		'4h' => 240,
+		'6h' => 360,
+		'24h' => 1440,
+		'7d' => 10080,
+		'all' => null,
+		default => 60,
+	};
+
+	$recentCalls = getRecentCalls(
+		$config['aprx_log_path'],
+		$minutes,
+		$meta['serverLat'],
+		$meta['serverLon'],
+		$source,
+		$selectedInterface
+	);
+
+	if (!empty($selectedInterface)) {
+		$recentCalls = array_filter($recentCalls, function ($info) use ($selectedInterface) {
+			return strtoupper($info['source'] ?? '') === strtoupper($selectedInterface);
+		});
+	}
+
+	$rfInterfaces = getRfInterfaces($config['aprx_config_path']);
+
+	foreach ($recentCalls as &$info) {
+		$iface = strtoupper($info['source'] ?? '');
+		$info['type'] = in_array($iface, $rfInterfaces) ? "RF: $iface" : "APRS-IS";
+	}
+	unset($info);
+
+	$callsigns = array_column($recentCalls, 'callsign');
+	$unique = array_unique($callsigns);
+	$totalCount = count($unique);
+
+	$rfCount = count(array_unique(array_column(
+		array_filter($recentCalls, fn($e) => str_starts_with($e['type'], 'RF:')),
+		'callsign'
+	)));
+
+	$aprsisCount = count(array_unique(array_column(
+		array_filter($recentCalls, fn($e) => $e['type'] === 'APRS-IS'),
+		'callsign'
+	)));
+
+	return [
+		'meta' => $meta,
+		'operatorNotice' => $operatorNotice,
+		'recentCalls' => $recentCalls,
+		'totalCount' => $totalCount,
+		'rfCount' => $rfCount,
+		'aprsisCount' => $aprsisCount,
+		'selectedInterface' => $selectedInterface,
+		'filter' => $filter,
+		'source' => $source,
+		'rfInterfaces' => $rfInterfaces
+	];
+}
+function generateStats(array $config, string $selectedRange = '7d'): array {
+	$interfaces = getRfInterfaces($config['aprx_config_path']);
+	$logPath = $config['aprx_log_path'];
+
+	$ranges = [
+		'1h' => ['label' => '1 Hour', 'cut' => '-1 hour'],
+		'2h' => ['label' => '2 Hours', 'cut' => '-2 hours'],
+		'6h' => ['label' => '6 Hours', 'cut' => '-6 hours'],
+		'12h' => ['label' => '12 Hours', 'cut' => '-12 hours'],
+		'1d' => ['label' => '1 Day', 'cut' => '-1 day'],
+		'7d' => ['label' => '7 Days', 'cut' => '-7 days'],
+		'14d' => ['label' => '14 Days', 'cut' => '-14 days'],
+		'30d' => ['label' => '30 Days', 'cut' => '-30 days']
+	];
+
+
+	$selectedRange = $_GET['range'] ?? '7d';
+	$cutoff = strtotime($ranges[$selectedRange]['cut'] ?? '-7 days');
+	$useHourly = in_array($selectedRange, ['1h', '2h', '6h', '12h', '1d']);
+
+	$lines = file_exists($logPath) ? file($logPath) : [];
+	$stats = [];
+	$allBuckets = [];
+
+	$now = time();
+	$step = $useHourly ? 3600 : 86400;
+
+	for ($t = $cutoff; $t <= $now; $t += $step) {
+		$bucket = $useHourly ? date('Y-m-d H:00', $t) : date('Y-m-d', $t);
+		$allBuckets[$bucket] = true;
+	}
+
+	foreach ($lines as $line) {
+		if (preg_match('/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})\.\d+\s+(\S+)\s+([RT])\s+/', $line, $m)) {
+			$date = $m[1];
+			$time = $m[2];
+			$iface = $m[3];
+			$dir = $m[4];
+			$ts = strtotime("$date $time");
+
+			if (!in_array($iface, $interfaces)) continue;
+			if ($ts < $cutoff) continue;
+
+			$bucket = $useHourly ? date('Y-m-d H:00', $ts) : $date;
+			$allBuckets[$bucket] = true;
+
+			if (!isset($stats[$iface][$bucket])) {
+				$stats[$iface][$bucket] = ['rx' => 0, 'tx' => 0];
+			}
+			if ($dir === 'R') $stats[$iface][$bucket]['rx']++;
+			if ($dir === 'T') $stats[$iface][$bucket]['tx']++;
+		}
+	}
+
+	$bucketList = array_keys($allBuckets);
+	sort($bucketList);
+
+	return [
+		'stats' => $stats,
+		'buckets' => $bucketList,
+		'useHourly' => $useHourly,
+		'selectedRange' => $selectedRange,
+		'interfaces' => $interfaces,
+		'ranges' => $ranges
+	];
 }
