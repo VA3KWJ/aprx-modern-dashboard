@@ -32,10 +32,10 @@ Want to see it in action?
 ## ✅ Tested Environment
 
 - **Debian 12 (Bookworm)**
+- **Debian 12 (Bookworm)** on Raspberry Pi 3B (arm64 headless image)
 - **Lighttpd 1.4.x** with PHP-FPM
 - **PHP 8.2** (specifically tested on 8.2.15)
 - **APRX** from Debian repo
-- **Debian 12 (Bookworm)** on Raspberry PI 3B (arm64 image)
 
 ---
 
