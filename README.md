@@ -49,7 +49,6 @@ Want to see it in action?
 ├── config.php		# Configuration file paths
 ├── functions.php	# Utility functions
 ├── footer.php		# Universal footer
-├── tail.php		# Log tailing backend
 ├── stats.php		# Dynamic RX/TX stats per interface
 ├── operator_notice.txt	# Optional message displayed at top of live log
 ├── api/
