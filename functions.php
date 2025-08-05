@@ -268,14 +268,48 @@ function getRfInterfaces($configPath) {
 
 	return $interfaces;
 }
-
 function getOperatorNotice(string $path = 'operator_notice.txt'): ?string {
-	if (file_exists($path)) {
-		$content = trim(file_get_contents($path));
-		return $content !== '' ? $content : null;
+	if (!file_exists($path)) {
+		return null;
 	}
-	return null;
+
+	$content = trim(file_get_contents($path));
+	if ($content === '') {
+		return null;
+	}
+
+	// Escape HTML
+	$content = htmlspecialchars($content);
+
+	// Markdown: [text](url)
+	$content = preg_replace_callback(
+		'/\[(.*?)\]\((https?:\/\/[^\s)]+)\)/',
+		function ($matches) {
+			$text = $matches[1];
+			$url = $matches[2];
+			return '<a href="' . $url . '" target="_blank" rel="noopener">' . $text . '</a>';
+		},
+		$content
+	);
+
+	// Auto-link bare URLs
+	$content = preg_replace(
+		'#(?<!["\'=])\b(https?://[^\s<]+)#i',
+		'<a href="$1" target="_blank" rel="noopener">$1</a>',
+		$content
+	);
+
+	// Basic markdown formatting
+	$content = preg_replace('/^# (.+)$/m', '<h3>$1</h3>', $content);
+	$content = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $content);
+	$content = preg_replace('/\*(.+?)\*/', '<em>$1</em>', $content);
+
+	// Newlines to <br>
+	$content = preg_replace('/\r\n|\r|\n/', '<br>', $content);
+
+	return $content;
 }
+
 function loadDashboardData(array $config, array $params): array {
 	session_start();
 

@@ -15,13 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function renderLog(lines) {
 		const filter = searchInput.value.toLowerCase();
-
-		// Check scroll position before clearing
-		const shouldAutoScroll =
-			logElement.scrollHeight - logElement.scrollTop <= logElement.clientHeight + 50;
-
 		logElement.innerHTML = "";
-
 		lines.forEach(line => {
 			if (line.toLowerCase().includes(filter)) {
 				const div = document.createElement("div");
@@ -30,39 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
 				logElement.appendChild(div);
 			}
 		});
-
-		if (shouldAutoScroll) {
-			logElement.scrollTop = logElement.scrollHeight;
-		}
+		logElement.scrollTop = logElement.scrollHeight;
 	}
 
 	async function fetchLog() {
-		try {
-			const res = await fetch(`/api/logfetch.php?log=${logType}&offset=${lastOffset}`);
-			if (!res.ok) {
-				logElement.innerHTML = "<div class='log-line log-sys'>Error loading log.</div>";
-				return;
-			}
-
-			const data = await res.json();
-			if (!data?.lines?.length) return;
-
-			lastOffset = data.offset || 0;
-
-			// Only update if new lines exist
-			const newLines = data.lines;
-			if (newLines.length === 0) return;
-
-			allLines.push(...newLines);
-			if (allLines.length > maxLines) {
-				allLines = allLines.slice(-maxLines);
-			}
-
-			renderLog(allLines);
-		} catch (err) {
-			console.error("Error fetching log:", err);
-			logElement.innerHTML = "<div class='log-line log-sys'>Connection error.</div>";
+		const res = await fetch(`/api/logfetch.php?log=${logType}&offset=${lastOffset}`);
+		if (!res.ok) {
+			logElement.innerHTML = "<div class='log-line log-sys'>Error loading log.</div>";
+			return;
 		}
+
+		const data = await res.json();
+		lastOffset = data.offset || 0;
+
+		allLines.push(...data.lines);
+		if (allLines.length > maxLines) {
+			allLines = allLines.slice(allLines.length - maxLines);
+		}
+
+		renderLog(allLines);
 	}
 
 	searchInput.addEventListener("input", () => renderLog(allLines));
@@ -85,8 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.body.removeChild(link);
 	});
 
-	// Initial load + polling
 	fetchLog();
 	setInterval(fetchLog, 5000);
 });
-

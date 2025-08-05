@@ -29,10 +29,9 @@
 		<h1 class="dashboard-title"><?php echo htmlspecialchars($config['callsign']); ?> - APRX Dashboard</h1>
 	</div>
 	<?php if (!empty($operatorNotice)): ?>
-	<div class="notice-box">
-		<?php echo nl2br(htmlspecialchars($operatorNotice)); ?>
-	</div>
-	<?php endif; ?>
+		<div class="notice-box">
+			<?= $operatorNotice ?>
+		</div>	<?php endif; ?>
 	<div class="header-nav">
 		<a href="/live.php">Live Log</a>
 		<a href="/stats.php">Interface Stats</a>

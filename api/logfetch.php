@@ -3,10 +3,11 @@ header('Content-Type: application/json');
 
 $config = require '../config.php';
 
-$type = $_GET['log'] ?? 'rf';
+$type = filter_input(INPUT_GET, 'log', FILTER_SANITIZE_STRING) ?? 'rf';
+$type = in_array($type, ['rf', 'daemon']) ? $type : 'rf';
 $logFile = $type === 'daemon'
-    ? ($config['aprx_daemon_log_path'] ?? '/var/log/aprx/aprx.log')
-    : ($config['aprx_log_path'] ?? '/var/log/aprx/aprx-rf.log');
+	? $config['aprx_daemon_log_path']
+	: $config['aprx_log_path'];
 
 $lastSize = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
 $currentSize = is_readable($logFile) ? filesize($logFile) : 0;

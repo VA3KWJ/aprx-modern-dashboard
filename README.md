@@ -112,6 +112,30 @@ This can be useful for:
 - Real-time station status updates
 
 ---
+---
+
+## 🆕 Recent Improvements
+
+- `stats.php` now uses a centralized `generateStats()` function, enabling consistent RX/TX analysis and interface bucketing across time ranges.
+- Operator notices (`operator_notice.txt`) now support basic Markdown formatting:
+  - `# Heading`, `**bold**`, `*italic*`, `[link text](https://example.com)`
+  - Plain URLs (e.g., `https://aprs.fi`) are auto-linked
+  - Secure rendering via internal parser (no raw HTML allowed)
+- Link colors inside the `.notice-box` have been updated for visibility on yellow background
+- Live log viewer improvements:
+  - DOM updates only occur when content has changed
+  - Log lines capped to 100 for browser performance
+  - Scroll position is preserved unless user is near the bottom (auto-scroll)
+  - Filtered views are retained for export
+
+### 🔐 Security & Input Handling
+
+- All `$_GET` input is now validated with `filter_input()` or strict `in_array()` checks
+- Log file access is restricted to `rf` and `daemon` keys only — no raw path access
+- The operator notice is sanitized using `htmlspecialchars()` before display to prevent HTML/JS injection
+- Only a safe subset of Markdown is allowed in operator messages (no raw tags, scripts, or HTML)
+
+---
 
 ## 📜 License
 

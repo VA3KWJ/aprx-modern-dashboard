@@ -5,7 +5,9 @@ $config = loadConfig();
 $meta = getStationMeta($config);
 extract($meta);
 
-$selectedRange = $_GET['range'] ?? '7d';
+$selectedRange = filter_input(INPUT_GET, 'range', FILTER_SANITIZE_STRING) ?? '7d';
+$allowedRanges = ['1h', '2h', '6h', '12h', '1d', '7d', '14d', '30d'];
+$selectedRange = in_array($selectedRange, $allowedRanges) ? $selectedRange : '7d';
 
 $statData = generateStats($config, $selectedRange);
 extract($statData); // includes $stats, $buckets, $ranges, etc.

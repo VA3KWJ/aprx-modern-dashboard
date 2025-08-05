@@ -2,7 +2,8 @@
     session_start();
     $config = include 'config.php';
     require_once 'functions.php';
-    $selectedLog = $_GET['log'] ?? 'rf';
+    $selectedLog = filter_input(INPUT_GET, 'log', FILTER_SANITIZE_STRING) ?? 'rf';
+    $selectedLog = in_array($selectedLog, ['rf', 'daemon']) ? $selectedLog : 'rf';
 ?>
 <!DOCTYPE html>
 <html lang="en">
