@@ -10,13 +10,15 @@ Want to see it in action?
 
 👉 **[View the live dashboard here](https://aprx.va3kwj.ca)**
 
+(this may go offline at some point)
+
 ---
 
 ## 🚀 Features
 
 - 📊 Dashboard summary of recent activity
-- 📡 📡 Live log viewer with selectable APRX-RF and Daemon logs
-- ⏱ Selectable time ranges (1h, 2h, 4h, 6h, 12h, 24h, 7d, All)
+- 📡 Live log viewer with selectable APRX-RF and Daemon logs
+- ⏱  Selectable time ranges (1h, 2h, 4h, 6h, 12h, 24h, 7d, All)
 - 🧭 Station table with QRZ and APRS-IS links
 - 🧠 Uptime, mode (Digipeater/iGate), APRX version, interface label
 - 🌐 Simple, modern CSS theme (no external dependencies)
@@ -24,14 +26,14 @@ Want to see it in action?
 - 📥 Log source dropdown and real-time stream updates
 - 📢 Optional operator notices shown at top of live log view (edit `operator_notice.txt`)
 - 📈 Interface-based RX/TX statistics with chart view
-- 🗂 Modular PHP logic (dashboard, stats, meta, filters)
+- 🗂  Modular PHP logic (dashboard, stats, meta, filters)
 - 🔽 Dynamic dropdowns for source, interface, and date range
-
+- 🗺️ Interactive station map with Leaflet.js (auto-centers on server location)
 ---
 
 ## ✅ Tested Environment
 
-- **Debian 12 (Bookworm)**
+- **Debian 12 (Bookworm)** on x86_64 (amd64 'server' image)
 - **Debian 12 (Bookworm)** on Raspberry Pi 3B (arm64 headless image)
 - **Lighttpd 1.4.x** with PHP-FPM
 - **PHP 8.2** (specifically tested on 8.2.15)
@@ -45,10 +47,12 @@ Want to see it in action?
 /var/www/html/
 ├── index.php		# Dashboard summary view
 ├── live.php		# Live log viewer
+├── map.php		# Leaflet-based station map
 ├── logchk.php		# Test logfile permissions (for debug)
 ├── config.php		# Configuration file paths
 ├── functions.php	# Utility functions
 ├── footer.php		# Universal footer
+├── favicon.ico		# Browser/Fav icon
 ├── stats.php		# Dynamic RX/TX stats per interface
 ├── operator_notice.txt	# Optional message displayed at top of live log
 ├── api/
@@ -57,6 +61,7 @@ Want to see it in action?
 │ ├── css/
 │ │ └── style.css	# Modern dark CSS theme
 │ ├── js/
+│ │ ├── map.js		# Map display logic
 │ │ └── live-log.js	# JavaScript for real-time log rendering
 │ ├── img/
 │ │ └── aprslogo.png	# Logo shown in header
@@ -116,6 +121,16 @@ This can be useful for:
 
 ## 🆕 Recent Improvements
 
+2025-08-20:
+- Added `map.php` with dynamic station plotting using Leaflet.js
+- Stations auto-cluster and center based on `myloc` from aprx.conf
+- Distance calculations fixed (fallback to config if myloc missing)
+- Log viewer stability and scroll performance improved
+- UI refinements to align filters, forms, and headings properly
+- Commented blocks in aprx.conf are now fully ignored during role detection
+- JS logic moved into `assets/js/` (e.g., `live-log.js`, `map.js`)
+
+2025-08-05:
 - `stats.php` now uses a centralized `generateStats()` function, enabling consistent RX/TX analysis and interface bucketing across time ranges.
 - Operator notices (`operator_notice.txt`) now support basic Markdown formatting:
   - `# Heading`, `**bold**`, `*italic*`, `[link text](https://example.com)`
@@ -164,7 +179,7 @@ Please credit all original contributors:
 - `getStationMeta()` will gracefully fall back to configured latitude/longitude
 - `generateStats()` powers the RX/TX charts in `stats.php` and supports time-based bucketing
 - Dropdowns and filters reflect the live state and persist across requests
-
+- Map redering utilizes [Leaflet](https://leafletjs.com/)
 
 ---
 

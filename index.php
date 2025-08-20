@@ -35,8 +35,11 @@
 	<div class="header-nav">
 		<a href="/live.php">Live Log</a>
 		<a href="/stats.php">Interface Stats</a>
+		<a href="/map.php">Map</a>
 	</div>
 </header>
+
+<div class="table-center">
 <section class="form">
     <form method="get" action="">
         <label for="filter">Show calls heard:</label>
@@ -67,8 +70,6 @@
 	</select>
     </form>
 </section>
-
-<div class="table-center">
     <table>
         <caption class="table-caption">Stations Heard: (<?php echo $rfCount; ?> RF, <?php echo $aprsisCount; ?> APRS-IS)</caption>
         <thead>

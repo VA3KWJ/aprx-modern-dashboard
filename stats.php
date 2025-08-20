@@ -2,8 +2,6 @@
 require_once 'functions.php';
 
 $config = loadConfig();
-$meta = getStationMeta($config);
-extract($meta);
 
 $selectedRange = filter_input(INPUT_GET, 'range', FILTER_SANITIZE_STRING) ?? '7d';
 $allowedRanges = ['1h', '2h', '6h', '12h', '1d', '7d', '14d', '30d'];
@@ -81,7 +79,7 @@ new Chart(document.getElementById('chart_<?php echo $iface; ?>'), {
                 display: true,
                 text: '<?php echo $iface; ?> RX/TX - <?php echo $ranges[$selectedRange]['label']; ?>'
             }
-        },
+         },
         scales: {
             y: { beginAtZero: true }
         }
@@ -91,9 +89,9 @@ new Chart(document.getElementById('chart_<?php echo $iface; ?>'), {
 </script>
 
 <?php
-$meta = getStationMeta($config);
-extract($meta);
-include 'footer.php';
+	$meta = getStationMeta($config);
+	extract($meta);
+	include 'footer.php';
 ?>
 </body>
 </html>
